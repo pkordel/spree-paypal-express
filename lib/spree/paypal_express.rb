@@ -54,27 +54,28 @@ module Spree::PaypalExpress
       @order.checkout.special_instructions = @ppx_details.params["note"]
 
       #@order.update_attribute(:user, current_user)
+      unless payment_method.preferred_no_shipping
+        ship_address = @ppx_details.address
+        order_ship_address = Address.new :firstname  => @ppx_details.params["first_name"],
+                                         :lastname   => @ppx_details.params["last_name"],
+                                         :address1   => ship_address["address1"],
+                                         :address2   => ship_address["address2"],
+                                         :city       => ship_address["city"],
+                                         :country    => Country.find_by_iso(ship_address["country"]),
+                                         :zipcode    => ship_address["zip"],
+                                         # phone is currently blanked in AM's PPX response lib
+                                         :phone      => @ppx_details.params["phone"] || "(not given)"
 
-      ship_address = @ppx_details.address
-      order_ship_address = Address.new :firstname  => @ppx_details.params["first_name"],
-                                       :lastname   => @ppx_details.params["last_name"],
-                                       :address1   => ship_address["address1"],
-                                       :address2   => ship_address["address2"],
-                                       :city       => ship_address["city"],
-                                       :country    => Country.find_by_iso(ship_address["country"]),
-                                       :zipcode    => ship_address["zip"],
-                                       # phone is currently blanked in AM's PPX response lib
-                                       :phone      => @ppx_details.params["phone"] || "(not given)"
+        if (state = State.find_by_abbr(ship_address["state"]))
+          order_ship_address.state = state
+        else
+          order_ship_address.state_name = ship_address["state"]
+        end
 
-      if (state = State.find_by_abbr(ship_address["state"]))
-        order_ship_address.state = state
-      else
-        order_ship_address.state_name = ship_address["state"]
+        order_ship_address.save!
+
+        @order.checkout.ship_address = order_ship_address
       end
-
-      order_ship_address.save!
-
-      @order.checkout.ship_address = order_ship_address
       @order.checkout.save
 
       if payment_method.preferred_review
