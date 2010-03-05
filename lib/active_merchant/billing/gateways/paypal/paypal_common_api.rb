@@ -10,40 +10,6 @@ module ActiveMerchant #:nodoc:
 
       silence_warnings do
         API_VERSION = '60.0'
-
-        URLS = {
-          :test => { :certificate => 'https://api.sandbox.paypal.com/2.0/',
-                     :signature   => 'https://api-3t.sandbox.paypal.com/2.0/' },
-          :live => { :certificate => 'https://api-aa.paypal.com/2.0/',
-                     :signature   => 'https://api-3t.paypal.com/2.0/' }
-        }
-
-        PAYPAL_NAMESPACE = 'urn:ebay:api:PayPalAPI'
-        EBAY_NAMESPACE = 'urn:ebay:apis:eBLBaseComponents'
-
-        ENVELOPE_NAMESPACES = { 'xmlns:xsd' => 'http://www.w3.org/2001/XMLSchema',
-                                'xmlns:env' => 'http://schemas.xmlsoap.org/soap/envelope/',
-                                'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance'
-                              }
-        CREDENTIALS_NAMESPACES = { 'xmlns' => PAYPAL_NAMESPACE,
-                                   'xmlns:n1' => EBAY_NAMESPACE,
-                                   'env:mustUnderstand' => '0'
-                                 }
-
-        AUSTRALIAN_STATES = {
-          'ACT' => 'Australian Capital Territory',
-          'NSW' => 'New South Wales',
-          'NT'  => 'Northern Territory',
-          'QLD' => 'Queensland',
-          'SA'  => 'South Australia',
-          'TAS' => 'Tasmania',
-          'VIC' => 'Victoria',
-          'WA'  => 'Western Australia'
-        }
-
-        SUCCESS_CODES = [ 'Success', 'SuccessWithWarning' ]
-
-        FRAUD_REVIEW_CODE = "11610"
       end
 
       # The gateway must be configured with either your PayPal PEM file
