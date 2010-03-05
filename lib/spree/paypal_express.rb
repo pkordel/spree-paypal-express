@@ -170,6 +170,11 @@ module Spree::PaypalExpress
       # see http://www.pdncommunity.com/t5/PayPal-Developer-Blog/Displaying-Order-Details-in-Express-Checkout/bc-p/92902#C851
     }
   end
+  
+  # hook to override paypal site options
+  def paypal_site_opts
+    {}
+  end
 
   def order_opts(order, payment_method, stage)
     items = order.line_items.map do |item|
@@ -256,7 +261,7 @@ module Spree::PaypalExpress
   end
 
   def all_opts(order, payment_method, stage=nil)
-    opts = fixed_opts.merge(order_opts(order, payment_method, stage))
+    opts = fixed_opts.merge(order_opts(order, payment_method, stage)).merge(paypal_site_opts)
 
     if stage == "payment"
       opts.merge! flat_rate_shipping_and_handling_options(order, stage)
