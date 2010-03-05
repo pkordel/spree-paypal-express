@@ -91,7 +91,7 @@ module Spree::PaypalExpress
   def paypal_finish
     load_object
 
-    opts = { :token => params[:token], :payer_id => params[:PayerID] }.merge all_opts(@order, params[:payment_method_id])
+    opts = { :token => params[:token], :payer_id => params[:PayerID] }.merge all_opts(@order, params[:payment_method_id], 'checkout' )
     gateway = paypal_gateway
 
     if Spree::Config[:auto_capture]
@@ -207,6 +207,8 @@ module Spree::PaypalExpress
       # get the main totals from the items (already *100)
       opts[:subtotal] = opts[:items].map {|i| i[:amount] * i[:qty] }.sum
       opts[:tax]      = opts[:items].map {|i| i[:tax]    * i[:qty] }.sum
+      opts[:handling] = 0  # MJM Added to force elements to be generated
+      opts[:shipping] = (order.ship_total*100).to_i
 
       # overall total
       opts[:money]    = opts.slice(:subtotal, :tax, :shipping, :handling).values.sum
