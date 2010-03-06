@@ -54,7 +54,16 @@ module Spree::PaypalExpress
       @order.checkout.special_instructions = @ppx_details.params["note"]
 
       #@order.update_attribute(:user, current_user)
-      unless payment_method.preferred_no_shipping
+      
+      # HACK: if Checkout state machine is modified to skip address and delivery, 
+      # checkout validation fails unless we have a shipping method defined
+      if payment_method.preferred_no_shipping
+        unless shipping_method = ShippingMethod.find_by_name('Download')
+          shipping_method = ShippingMethod.create(:name => 'Download', :zone => Zone.first)
+          Calculator::FlatRate.create(:calculable => shipping_method)
+        end
+        @order.checkout.shipping_method = shipping_method
+      else
         ship_address = @ppx_details.address
         order_ship_address = Address.new :firstname  => @ppx_details.params["first_name"],
                                          :lastname   => @ppx_details.params["last_name"],
@@ -76,6 +85,7 @@ module Spree::PaypalExpress
 
         @order.checkout.ship_address = order_ship_address
       end
+      
       @order.checkout.save
 
       if payment_method.preferred_review
