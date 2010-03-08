@@ -242,20 +242,24 @@ module Spree::PaypalExpress
   end
 
   def address_options(order)
-    {
-      :no_shipping => false,
-      :address_override => true,
-      :address => {
-        :name       => "#{order.ship_address.firstname} #{order.ship_address.lastname}",
-        :address1   => order.ship_address.address1,
-        :address2   => order.ship_address.address2,
-        :city       => order.ship_address.city,
-        :state      => order.ship_address.state.nil? ? order.ship_address.state_name.to_s : order.ship_address.state.abbr,
-        :country    => order.ship_address.country.iso,
-        :zip        => order.ship_address.zipcode,
-        :phone      => order.ship_address.phone
+    if payment_method.preferred_no_shipping 
+      { :no_shipping => true }
+    else
+      {
+        :no_shipping => false,
+        :address_override => true,
+        :address => {
+          :name       => "#{order.ship_address.firstname} #{order.ship_address.lastname}",
+          :address1   => order.ship_address.address1,
+          :address2   => order.ship_address.address2,
+          :city       => order.ship_address.city,
+          :state      => order.ship_address.state.nil? ? order.ship_address.state_name.to_s : order.ship_address.state.abbr,
+          :country    => order.ship_address.country.iso,
+          :zip        => order.ship_address.zipcode,
+          :phone      => order.ship_address.phone
+        }
       }
-    }
+    end
   end
 
   def all_opts(order, payment_method, stage=nil)
