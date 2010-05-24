@@ -92,7 +92,6 @@ module Spree::PaypalExpress
     load_object
 
     opts = { :token => params[:token], :payer_id => params[:PayerID] }.merge all_opts(@order, params[:payment_method_id], 'payment' )
-
     gateway = paypal_gateway
 
     if Spree::Config[:auto_capture]
@@ -170,11 +169,6 @@ module Spree::PaypalExpress
       # they've not been tested and may trigger some paypal bugs, eg not showing order
       # see http://www.pdncommunity.com/t5/PayPal-Developer-Blog/Displaying-Order-Details-in-Express-Checkout/bc-p/92902#C851
     }
-  end
-  
-  # hook to override paypal site options
-  def paypal_site_opts
-    {}
   end
 
   # hook to override paypal site options
